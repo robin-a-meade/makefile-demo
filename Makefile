@@ -1,5 +1,5 @@
 CFLAGS = -ansi -pedantic-errors -Wall -g
-CPPFLAGS += -MMD -MP # Generate .d files
+CPPFLAGS += -MMD -MP # Generate .d makefiles
 LDLIBS = -lm
 SRCS = demo.c arraylib.c intlib.c
 
@@ -36,7 +36,7 @@ $(EXECUTABLE): $(OBJS)
 
 .PHONY: clean
 clean:
-	rm -f *.o *.d demo
+	rm -f *.o *.d $(EXECUTABLE)
 
 # Include the .d makefiles.
 # The - at the front suppresses the errors of missing Makefiles. Initially, all
