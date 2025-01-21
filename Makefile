@@ -12,6 +12,12 @@ DEPS = $(OBJS:.o=.d)
 # Other popular choices for this variable are TARGET, EXE, and PROGRAM
 EXECUTABLE = demo
 
+# The first file in a makefile is the default rule
+# It is customary to make this target 'all'
+# We declare that this is a "PHONY" target, meaning that the target does not correspond to a filename
+.PHONY: all
+all: $(EXECUTABLE)
+
 # Rule for building $(EXECUTABLE)
 #
 # Since this is the first rule in the makefile, it will be executed by default
@@ -69,4 +75,20 @@ clean:
 # COMPILE.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
 #
 # LINK.o = $(CC) $(LDFLAGS) $(TARGET_ARCH)
+
+# Create an .tar.gz archive
+# =========================
 #
+# Typically, each `.c` file will have a corresponding `.h` file
+# Exception: the `.c` file for the executable will not have a corresponding `.h` file
+HEADERS = $(filter-out $(EXECUTABLE).h, $(SRCS:.c=.h))
+
+VERSION=0.0.2
+.PHONY: archive
+archive:
+	@if [ -f "source_files_$(VERSION).tar.gz" ]; then \
+	    echo "Error: Archive file source_files_$(VERSION).tar.gz already exists."; \
+	    echo "Please update the VERSION variable in the Makefile."; \
+	    exit 1; \
+	fi
+	tar -czvf source_files_$(VERSION).tar.gz $(SRCS) $(HEADERS)
