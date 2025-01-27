@@ -12,15 +12,28 @@ DEP = $(OBJ:.o=.d)
 # Other popular choices for this variable are TARGET, EXECUTABLE, and PROGRAM
 EXE = demo
 
-# The first file in a makefile is the default rule
-# It is customary to make this target 'all'
-# We declare that this is a "PHONY" target, meaning that the target does not correspond to a filename
-all: $(EXE)
-
 # Rule for building $(EXE)
 #
-# Since this is the first rule in the makefile, it will be executed by default
-# when no target is specified when `make` is invoked.
+# Since this is the first rule in the makefile, it is the default goal that
+# will be executed if no target is specified when `make` is invoked.
+#
+
+$(EXE): $(OBJ)
+
+# You'll notice that there is no recipe specified.
+# We are specifying here only the prerequisites.
+# How then does Make know how to build the target?
+#
+# There exists this built-in implicit rule:
+#
+# %: %.o
+#        $(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
+#
+# From this implicit rule, Make deduces that when it encounters a target like
+# `demo` with `.o` files as prerequisites, including `demo.o`, that it needs to
+# link the prerequisite object files of `demo` to create the executable `demo`.
+#
+# Implicit rules let Make deduce the recipes.
 #
 # $@ is a special automatic variable in Make that represents the target
 # of the current rule. In this case, it's equivalent to $(EXE).
@@ -29,11 +42,9 @@ all: $(EXE)
 # prerequisites (dependencies) of the target. In this case, it's equivalent to
 # $(OBJ).
 
-$(EXE): $(OBJ)
-
-# We don't need to specify these prerequisites anymore because we switched to
-# using the -MMD option to have the compiler do this work for us (see the .d
-# files that are generated).
+# We don't need to specify these prerequisites for object files anymore because
+# we switched to using the -MMD option to have the compiler do this work for us
+# (see the .d files that are generated).
 
 #intlib.o : intlib.c intlib.h
 #arraylib.o : arraylib.c arraylib.h intlib.h
@@ -66,9 +77,6 @@ clean:
 #
 # %.o: %.c
 #        $(COMPILE.c) $(OUTPUT_OPTION) $<
-#
-# %: %.o
-#        $(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
 #
 # COMPILE.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
 #
