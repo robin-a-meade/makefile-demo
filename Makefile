@@ -57,8 +57,11 @@ $(EXE): $(OBJ)
 #arraylib.o : arraylib.c arraylib.h intlib.h
 #demo.o : demo.c arraylib.h
 
+# TODO: Do I need to use nullglob or failglob options here. I don't like how
+# the *.d will resolve to *.d if there is no matching *.d files. What is the
+# proper way to handle this.
 clean:
-	rm -f $(OBJ) *.d $(EXE)
+	-rm $(OBJ) *.d $(EXE)
 
 # Include the .d makefiles.
 # The - at the front suppresses the errors of missing Makefiles. Initially, all
