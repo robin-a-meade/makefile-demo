@@ -15,7 +15,6 @@ EXE = demo
 # The first file in a makefile is the default rule
 # It is customary to make this target 'all'
 # We declare that this is a "PHONY" target, meaning that the target does not correspond to a filename
-.PHONY: all
 all: $(EXE)
 
 # Rule for building $(EXE)
@@ -40,7 +39,6 @@ $(EXE): $(OBJ)
 #arraylib.o : arraylib.c arraylib.h intlib.h
 #demo.o : demo.c arraylib.h
 
-.PHONY: clean
 clean:
 	rm -f $(OBJ) *.d $(EXE)
 
@@ -76,19 +74,21 @@ clean:
 #
 # LINK.o = $(CC) $(LDFLAGS) $(TARGET_ARCH)
 
-# Create an .tar.gz archive
+# Create a .tar.gz archive
 # =========================
 #
 # Typically, each `.c` file will have a corresponding `.h` file
 # Exception: the `.c` file for the EXE will not have a corresponding `.h` file
-HEADERS = $(filter-out $(EXE).h, $(SRC:.c=.h))
+HDR = $(filter-out $(EXE).h, $(SRC:.c=.h))
+# Or, you could KISS and list each .h file
 
-VERSION=0.0.2
-.PHONY: archive
+VERSION = 0.0.2
 archive:
 	@if [ -f "source_files_$(VERSION).tar.gz" ]; then \
 	    echo "Error: Archive file source_files_$(VERSION).tar.gz already exists."; \
 	    echo "Please update the VERSION variable in the Makefile."; \
 	    exit 1; \
 	fi
-	tar -czvf source_files_$(VERSION).tar.gz $(SRC) $(HEADERS)
+	tar -czvf source_files_$(VERSION).tar.gz $(SRC) $(HDR)
+
+.PHONY: all clean archive
