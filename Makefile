@@ -29,11 +29,18 @@ $(EXE): $(OBJ)
 # %: %.o
 #        $(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
 #
-# From this implicit rule, Make deduces that when it encounters a target like
-# `demo` with `.o` files as prerequisites, including `demo.o`, that it needs to
-# link the prerequisite object files of `demo` to create the executable `demo`.
+# From this implicit rule, Make is able to deduce that when it encounters a
+# target like `demo` with `demo.o` as one of its dependencies, that it needs to
+# link all of `demo`'s prerequisites (object files) into an executable named
+# `demo`.
 #
-# Implicit rules let Make deduce the recipes.
+# Implicit rules essentially let Make deduce recipes.
+#
+# It is a clever mechanism.
+#
+# Note that, for this implicit rule to be applied, the project needs to follow
+# the convention of having a `PROG.c` file if the executable file will be
+# `PROG`. That's easy enough to follow. It is a good convention.
 #
 # $@ is a special automatic variable in Make that represents the target
 # of the current rule. In this case, it's equivalent to $(EXE).
