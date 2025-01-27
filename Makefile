@@ -1,36 +1,36 @@
 CFLAGS = -ansi -pedantic-errors -Wall -g
 CPPFLAGS += -MMD -MP # Generate .d makefiles
 LDLIBS = -lm
-SRCS = demo.c arraylib.c intlib.c
+SRC = demo.c arraylib.c intlib.c
 
-OBJS = ${SRCS:.c=.o}
-DEPS = $(OBJS:.o=.d)
+OBJ = ${SRC:.c=.o}
+DEP = $(OBJ:.o=.d)
 
-# Final executable name
+# Final EXE name
 # We store it a variable because we reference it multiple times
-# It didn't need to be called EXECUTABLE
-# Other popular choices for this variable are TARGET, EXE, and PROGRAM
-EXECUTABLE = demo
+# It didn't need to be called EXE
+# Other popular choices for this variable are TARGET, EXECUTABLE, and PROGRAM
+EXE = demo
 
 # The first file in a makefile is the default rule
 # It is customary to make this target 'all'
 # We declare that this is a "PHONY" target, meaning that the target does not correspond to a filename
 .PHONY: all
-all: $(EXECUTABLE)
+all: $(EXE)
 
-# Rule for building $(EXECUTABLE)
+# Rule for building $(EXE)
 #
 # Since this is the first rule in the makefile, it will be executed by default
 # when no target is specified when `make` is invoked.
 #
 # $@ is a special automatic variable in Make that represents the target
-# of the current rule. In this case, it's equivalent to $(EXECUTABLE).
+# of the current rule. In this case, it's equivalent to $(EXE).
 #
 # $^ s a special automatic variable that expands to the list of all
 # prerequisites (dependencies) of the target. In this case, it's equivalent to
 # $(OBJ).
 
-$(EXECUTABLE): $(OBJS)
+$(EXE): $(OBJ)
 
 # We don't need to specify these prerequisites anymore because we switched to
 # using the -MMD option to have the compiler do this work for us (see the .d
@@ -42,12 +42,12 @@ $(EXECUTABLE): $(OBJS)
 
 .PHONY: clean
 clean:
-	rm -f *.o *.d $(EXECUTABLE)
+	rm -f $(OBJ) *.d $(EXE)
 
 # Include the .d makefiles.
 # The - at the front suppresses the errors of missing Makefiles. Initially, all
 # the .d files will be missing, and we don't want those errors to stop the build.
--include $(DEPS)
+-include $(DEP)
 
 # NOTES
 # =====
@@ -80,8 +80,8 @@ clean:
 # =========================
 #
 # Typically, each `.c` file will have a corresponding `.h` file
-# Exception: the `.c` file for the executable will not have a corresponding `.h` file
-HEADERS = $(filter-out $(EXECUTABLE).h, $(SRCS:.c=.h))
+# Exception: the `.c` file for the EXE will not have a corresponding `.h` file
+HEADERS = $(filter-out $(EXE).h, $(SRC:.c=.h))
 
 VERSION=0.0.2
 .PHONY: archive
@@ -91,4 +91,4 @@ archive:
 	    echo "Please update the VERSION variable in the Makefile."; \
 	    exit 1; \
 	fi
-	tar -czvf source_files_$(VERSION).tar.gz $(SRCS) $(HEADERS)
+	tar -czvf source_files_$(VERSION).tar.gz $(SRC) $(HEADERS)
