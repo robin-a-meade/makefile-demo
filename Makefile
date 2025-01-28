@@ -57,11 +57,15 @@ $(EXE): $(OBJ)
 #arraylib.o : arraylib.c arraylib.h intlib.h
 #demo.o : demo.c arraylib.h
 
-# TODO: Do I need to use nullglob or failglob options here. I don't like how
-# the *.d will resolve to *.d if there is no matching *.d files. What is the
-# proper way to handle this.
+# NOTES:
+# - I changed *.d to $(DEP) because I'm not a fan of globs in Makefiles because
+#   they are imprecise and they resolve to the pattern if no much (unless you
+#   set the nullglob shell option).
+# - I added the leading hyphen to not report an error about a missing file when
+#   cleaning; this could also be handled by add the `-f` option to `rm`. I'm
+#   not sure which method of suppressing error I like better
 clean:
-	-rm $(OBJ) *.d $(EXE)
+	-rm $(OBJ) $(DEP) $(EXE)
 
 # Include the .d makefiles.
 # The - at the front suppresses the errors of missing Makefiles. Initially, all
