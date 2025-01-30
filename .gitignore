@@ -1,4 +1,4 @@
 *.o
 *.d
-demo
+/demo/demo
 *.tar.gz
