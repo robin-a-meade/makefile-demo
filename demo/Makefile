@@ -125,16 +125,17 @@ clean:
 #
 # Typically, each `.c` file will have a corresponding `.h` file
 # Exception: the `.c` file for the EXE will not have a corresponding `.h` file
+# Here, we derive the .h files from the .c files.
+# Or, you could KISS and list each .h file (safer but creates a maintenance burden)
 HDR = $(filter-out $(EXE).h, $(SRC:.c=.h))
-# Or, you could KISS and list each .h file
 
 VERSION = 0.0.2
 archive:
 	@if [ -f "source_files_$(VERSION).tar.gz" ]; then \
-	    echo "Error: Archive file source_files_$(VERSION).tar.gz already exists."; \
-	    echo "Please update the VERSION variable in the Makefile."; \
-	    exit 1; \
-	fi
+		echo "Error: Archive file source_files_$(VERSION).tar.gz already exists."; \
+		echo "Please update the VERSION variable in the Makefile."; \
+		exit 1; \
+		fi
 	tar -czvf source_files_$(VERSION).tar.gz $(SRC) $(HDR)
 
 .PHONY: all clean archive
