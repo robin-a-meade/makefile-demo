@@ -34,6 +34,9 @@ $(EXE): $(OBJ)
 # link all of `demo`'s prerequisites (all the object files) into an executable
 # named `demo`.
 #
+# $^  Expands to the names of all the prerequisites
+# $@  Expands to the file name of the target of the rule
+#
 # Implicit rules essentially let Make deduce recipes.
 #
 # It is a clever mechanism.
@@ -41,13 +44,6 @@ $(EXE): $(OBJ)
 # Note that, for this implicit rule to be applied, the project needs to follow
 # the convention that a c project that builds an executable named `prog` should
 # have a source file named `prog.c`.
-#
-# $@ is a special automatic variable in Make that represents the target
-# of the current rule. In this case, it's equivalent to $(EXE).
-#
-# $^ s a special automatic variable that expands to the list of all
-# prerequisites (dependencies) of the target. In this case, it's equivalent to
-# $(OBJ).
 #
 # After the expansions, we end up with:
 #
