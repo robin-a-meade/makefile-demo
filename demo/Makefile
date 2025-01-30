@@ -6,17 +6,17 @@ SRC = demo.c arraylib.c intlib.c
 OBJ = ${SRC:.c=.o}
 DEP = $(OBJ:.o=.d)
 
-# Final EXE name
+# The name of the executable file that we are making
 # We store it a variable because we reference it multiple times
 # It didn't need to be called EXE
-# Other popular choices for this variable are TARGET, EXECUTABLE, and PROGRAM
+# Other popular choices for this variable are NAME, TARGET, EXECUTABLE, and PROGRAM
 EXE = demo
 
 # Rule for building $(EXE)
 #
 # Since this is the first rule in the makefile, it is the default goal that
-# will be executed if no target is specified when `make` is invoked.
-#
+# will be executed if no target is specified when `make` is invoked
+# (assuming the .DEFAULT_GOAL special variable was not set.)
 
 $(EXE): $(OBJ)
 
@@ -31,16 +31,16 @@ $(EXE): $(OBJ)
 #
 # From this implicit rule, Make is able to deduce that when it encounters a
 # target like `demo` with `demo.o` as one of its dependencies, that it needs to
-# link all of `demo`'s prerequisites (object files) into an executable named
-# `demo`.
+# link all of `demo`'s prerequisites (all the object files) into an executable
+# named `demo`.
 #
 # Implicit rules essentially let Make deduce recipes.
 #
 # It is a clever mechanism.
 #
 # Note that, for this implicit rule to be applied, the project needs to follow
-# the convention of having a `PROG.c` file if the executable file will be
-# `PROG`. That's easy enough to follow. It is a good convention.
+# the convention that a c project that builds an executable named `prog` should
+# have a source file named `prog.c`.
 #
 # $@ is a special automatic variable in Make that represents the target
 # of the current rule. In this case, it's equivalent to $(EXE).
@@ -48,10 +48,32 @@ $(EXE): $(OBJ)
 # $^ s a special automatic variable that expands to the list of all
 # prerequisites (dependencies) of the target. In this case, it's equivalent to
 # $(OBJ).
+#
+# After the expansions, we end up with:
+#
+#     demo: demo.o intlib.o arraylib.o
+#
+#     demo: demo.o
+#             gcc -ansi -pedantic-errors -Wall -g demo.o intlib.o arraylib.o -lm -o demo
+#
+# The demo target is listed twice. That's OK, as long as only one of the rules
+# has a recipe. When a target is listed multiple times, the prerequisites
+# of those rules accumulate.
+#
+# In our case, the result is:
+#
+#     demo: demo.o demo.o intlib.o arraylib.o
+#             gcc -ansi -pedantic-errors -Wall -g demo.o intlib.o arraylib.o -lm -o demo
+#
+# You'll see that in the output of `make -p`. (The variables won't be expanded, though.)
+#
+# Notice that `demo.o` is listed twice. The prerequisites accumulated. It might
+# seem strange to have a prerequisite listed multiple times, but it makes no
+# difference to the operation of make.
 
-# We don't need to specify these prerequisites for object files anymore because
+# We don't need to specify the prerequisites for object files anymore because
 # we switched to using the -MMD option to have the compiler do this work for us
-# (see the .d files that are generated).
+# (see the .d files that are generated). We comment them out:
 
 #intlib.o : intlib.c intlib.h
 #arraylib.o : arraylib.c arraylib.h intlib.h
@@ -62,7 +84,7 @@ $(EXE): $(OBJ)
 #   they are imprecise and they resolve to the pattern if no much (unless you
 #   set the nullglob shell option).
 # - I added the leading hyphen to not report an error about a missing file when
-#   cleaning; this could also be handled by add the `-f` option to `rm`. I'm
+#   cleaning; this could also be handled by adding the `-f` option to `rm`. I'm
 #   not sure which method of suppressing error I like better
 # - Update: I decided to use `-v` and `-f` options. The `-f` option suppresses
 #   error messages about non-existent files. The `-v` option prints which files
@@ -71,9 +93,11 @@ $(EXE): $(OBJ)
 clean:
 	rm -vf $(OBJ) $(DEP) $(EXE)
 
-# Include the .d makefiles.
+# Include the .d Makefiles.
 # The - at the front suppresses the errors of missing Makefiles. Initially, all
-# the .d files will be missing, and we don't want those errors to stop the build.
+# the .d Makefiles will be missing, and we don't want those errors to stop the
+# build. The -MMD -MP options we set in CPPFLAGS instruct the gcc compiler to
+# generate the .d Makefiles when the .c files are compiled.
 -include $(DEP)
 
 # NOTES
